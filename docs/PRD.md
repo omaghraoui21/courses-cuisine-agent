@@ -205,28 +205,17 @@ Scénarios obligatoires avant usage réel :
 
 Pas de délai garanti avant les essais Grocy, vision et Glovo. Ne pas ajouter Mealie, KitchenOwl, une orchestration multi-agent ou cinq collecteurs au premier lot.
 
-## 14. Étapes manuelles pour Omar
+## 14. Étapes manuelles pour Omar — version déployée
 
-### Maintenant
+Le dépôt existe et le stockage est natif D1 ; aucun serveur Grocy n'est requis. Les décisions ci-dessus restent le cadrage initial. L'état courant et les limites font foi dans [production-readiness.md](production-readiness.md).
 
-1. Ouvrir https://github.com/new et créer **courses-cuisine-agent** sous le compte ou l’organisation souhaité.
-2. Choisir **Private** pour le démarrage. Ajouter un README afin d’initialiser la branche principale. Laisser le choix de licence du nouveau projet à plus tard ; le dépôt reste privé.
-3. Donner à l’application GitHub connectée à ChatGPT l’accès à ce dépôt si l’accès est limité à des dépôts sélectionnés. Aucun jeton à copier dans la conversation.
-4. Envoyer le lien exact du dépôt ici. Le nom du propriétaire ne doit pas être deviné.
+1. Ouvrir Nesma et donner accès au conjoint avec le menu Partager du Site.
+2. Dans Plus → Notre foyer, créer un lien puis le transmettre ; le conjoint le rejoint avec son propre compte.
+3. Vérifier à deux un ajout, son annulation et la liste commune ; tester une sauvegarde/restauration.
+4. Renseigner les habitudes et exclusions du foyer. Le budget est choisi pour chaque panier.
+5. Configurer ensuite la vision via les secrets sécurisés et évaluer quelques photos privées.
+6. Développer et connecter le pont Glovo avant un essai supervisé ; chaque panier réel exige une approbation explicite.
 
-Ne pas forker Grocy manuellement à ce stade. Son usage via API ne nécessite pas de fork.
-
-### Pendant le premier lot
-
-5. Choisir avec nous où faire tourner Grocy : machine allumée accessible au foyer, NAS ou petit serveur. Ne rien acheter avant le test local.
-6. Après installation accompagnée, changer les identifiants initiaux et créer une clé Grocy. Renseigner la clé dans le mécanisme de secrets prévu, jamais dans GitHub ni dans une conversation.
-7. Fournir cinq à dix photos/tickets d’exemple en masquant les informations personnelles, puis les quantités attendues pour évaluer la reconnaissance. Ces éléments servent aux essais privés, pas au dépôt.
-8. Indiquer nombre de personnes, principales exclusions alimentaires et une dizaine de produits habituels. Un budget peut être ajouté plus tard.
-
-### Plus tard, uniquement lorsque nécessaire
-
-9. Connecter un fournisseur IA et fixer un plafond de dépenses dans son interface sécurisée.
-10. Pour l’essai Glovo, ouvrir la session utilisateur et confirmer l’adresse dans Glovo ; valider le panier exact et toute authentification bancaire demandée.
 
 ## 15. Travail de développement après réception du dépôt
 

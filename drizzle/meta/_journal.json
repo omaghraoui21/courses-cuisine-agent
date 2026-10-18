@@ -15,6 +15,13 @@
       "when": 1792324138899,
       "tag": "0001_clever_forgotten_one",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1792330816538,
+      "tag": "0002_lyrical_black_tom",
+      "breakpoints": true
     }
   ]
 }

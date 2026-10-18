@@ -1,0 +1,24 @@
+import assert from 'node:assert/strict';
+import ts from 'typescript';
+import {readFileSync} from 'node:fs';
+import {createRequire} from 'node:module';
+import {pathToFileURL} from 'node:url';
+const require=createRequire(import.meta.url),enc=s=>'data:text/javascript;base64,'+Buffer.from(s).toString('base64');
+const compile=p=>ts.transpileModule(readFileSync(new URL(p,import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;
+const domain=enc(compile('../lib/domain.ts'));
+const reducer=enc(compile('../lib/household.ts').replaceAll("'./domain'",JSON.stringify(domain)).replace("'zod'",JSON.stringify(pathToFileURL(require.resolve('zod')).href)));
+const source=compile('../lib/backups.ts').replace("'./household-access'",JSON.stringify(enc('export const householdDb=()=>{throw new Error("No DB in pure test")};'))).replace("'./household'",JSON.stringify(reducer)).replace("'./domain'",JSON.stringify(domain));
+const {backupState,restoreState,tunisDate}=await import(enc(source));
+const {emptyState}=await import(domain);const {applyAction,actionSchema}=await import(reducer);
+let s=emptyState();s=applyAction(s,actionSchema.parse({action:'add_item',requestId:crypto.randomUUID(),item:{name:'Shampooing',quantity:2,unit:'flacon',category:'hygiene',monthlyUsage:1}}),'fp');
+s.shopping=[{id:'shopping',name:'Café',quantity:1,unit:'paquet',checked:false,priceMillimes:null}];
+s.importFingerprints=['a'.repeat(64)];s.consumption=[{itemId:s.items[0].id,quantity:1,at:'2026-10-01T10:00:00.000Z'}];
+const restored=restoreState(backupState(s));
+assert.equal(restored.items[0].name,'Shampooing');assert.equal(restored.items[0].category,'hygiene');assert.equal(restored.items[0].monthlyUsage,1);assert.equal(restored.shopping[0].name,'Café');assert.equal(restored.consumption.length,1);assert.deepEqual(restored.importFingerprints,s.importFingerprints);assert.equal(restored.requests.length,0);assert.equal(restored.events[0].action,'restore_backup');
+assert.throws(()=>restoreState('{"formatVersion":99}'));
+const bad=JSON.parse(backupState(s));bad.state.items[0].quantity=-3;assert.throws(()=>restoreState(JSON.stringify(bad)));
+assert.equal(tunisDate(new Date('2026-10-17T23:30:00Z')),'2026-10-18');
+console.log('Backup roundtrip, validation and Tunis date: 11 assertions passed.');
+
+const large=emptyState();large.items=Array.from({length:500},(_,i)=>({...s.items[0],id:'item-'+i,name:'Produit '+i}));assert.equal(restoreState(backupState(large)).items.length,500);
+console.log('Backup restores all 500 allowed products.');

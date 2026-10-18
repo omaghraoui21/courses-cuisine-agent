@@ -1,6 +1,6 @@
 # Nesma — Courses & Cuisine
 
-Application personnelle de courses et cuisine pour la Tunisie. Interface mobile française, inventaire durable D1, liste de courses, idées de recettes et suivi des sources marchandes.
+Application familiale de courses et cuisine pour la Tunisie. Interface mobile française, inventaire durable D1, liste de courses, idées de recettes et suivi des sources marchandes.
 
 ## Fonctions disponibles dans le code
 
@@ -29,11 +29,14 @@ Le compagnon `agent-runtime/` est un projet eve séparé non déployé par le bu
 
 ## Limites connues
 
-- Accès privé au compte propriétaire ; pas encore d'invitation multi-membres.
+- Accès Site privé ; foyer partagé par invitation à usage unique. Le conjoint doit aussi recevoir l’accès au Site dans Partager.
 - Pas d'accès IA actif sans clé et modèle ; saisie manuelle toujours disponible.
 - Pas de pont Glovo opérationnel ni de paiement automatique actif.
 - Pas de collecte quotidienne planifiée ; actualisation au clic et cache temporaire.
 - Quatre enseignes ne fournissent pas encore de prix automatiquement exploitables.
-- Les préférences alimentaires servent de repères ; les recettes modèles ne sont pas une validation nutritionnelle ou allergénique.
+- Dix recettes et menus trois/sept jours ; seuls les filtres reconnus sont appliqués, les emballages restent à vérifier.
 
 Voir docs/retailer-feasibility.md et docs/glovo-bridge.md. Les états indisponibles restent explicites ; aucun succès simulé.
+
+## Usage simple et état production
+Maison / Repas / Liste, niveaux sans comptage quotidien, liste semaine/mois, sauvegardes et restauration. Voir [production-readiness](docs/production-readiness.md) pour les fonctions vérifiées et les intégrations encore inactives.

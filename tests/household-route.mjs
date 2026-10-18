@@ -17,6 +17,9 @@ const modules={
   '@/db':encode('export function getDb(){globalThis.routeTestDbCalls++;throw new Error("D1 should not be reached")}'),
   '@/db/schema':encode('export const householdStates={},orderDrafts={};'),
   '@/lib/domain':domain,'@/lib/household':reducer,
+  '@/lib/household-access':encode('export async function resolveHousehold(){throw new Error("Access must not be reached")} export function householdMetadata(x){return x}'),
+  '@/lib/backups':encode('export async function saveBackup(){throw new Error("Backup must not be reached")}'),
+  '@/lib/mutation-ledger':encode('export async function wasApplied(){throw new Error("Ledger must not be reached")} export async function recordApplied(){} export const receiptKey=(a,b)=>JSON.stringify([a,b]);'),
 };
 let source=compile('../app/api/household/route.ts');
 for(const [name,url] of Object.entries(modules))source=source.replaceAll(`'${name}'`,JSON.stringify(url));

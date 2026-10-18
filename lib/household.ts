@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { CAPABILITIES, emptyState } from './domain';
-import type { HouseholdItem, HouseholdResponse, HouseholdState, ConsumptionForecast } from './domain';
+import type { HouseholdItem, HouseholdResponse, HouseholdState, ConsumptionForecast, ShoppingItem } from './domain';
 const short = z.string().trim().min(1).max(160);
 const qty = z.number().finite().min(0).max(100000);
 const date = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine(v => !Number.isNaN(Date.parse(v)) && new Date(v).toISOString().slice(0,10) === v, 'Date invalide').nullable();
@@ -23,11 +23,13 @@ const importItem = z.object({
 const shoppingFields = {name: short, quantity: z.number().finite().positive().max(100000).default(1), unit: short.default('pièce'), checked: z.boolean().default(false), priceMillimes: z.number().int().min(0).max(100000000).nullable().default(null), retailer: z.string().trim().max(120).optional()};
 const shopping = z.object(shoppingFields).strict();
 const preferences = z.object({people: z.number().int().min(1).max(30), budgetMillimes: z.number().int().min(0).max(100000000), diet: z.array(short).max(20), maxStores: z.number().int().min(1).max(5)}).strict();
-const base = {requestId: z.string().uuid()};
+const base = {requestId: z.string().uuid(),expectedScopeId:z.string().min(1).max(160).optional()};
 export const actionSchema = z.discriminatedUnion('action', [
   z.object({...base,action:z.literal('add_item'),item}).strict(),
   z.object({...base,action:z.literal('update_item'),id:short,patch:item.partial()}).strict(),
   z.object({...base,action:z.literal('delete_item'),id:short}).strict(),
+  z.object({...base,action:z.literal('mark_level'),id:short,level:z.enum(['sufficient','low','empty'])}).strict(),
+  z.object({...base,action:z.literal('suggest_shopping'),days:z.union([z.literal(7),z.literal(30)]).default(7)}).strict(),
   z.object({...base,action:z.literal('consume_item'),id:short,quantity:z.number().finite().positive().max(100000).default(1)}).strict(),
   z.object({...base,action:z.literal('undo_event'),id:short}).strict(),
   z.object({...base,action:z.literal('add_shopping'),item:shopping}).strict(),
@@ -73,6 +75,7 @@ export function applyAction(state:HouseholdState,action:HouseholdAction,fingerpr
           if(quantity>100000)throw new DomainError('Quantité cumulée trop élevée.');
           if(incoming.unit!=null && incoming.unit!==found.unit)next.consumption=(next.consumption??[]).filter(o=>o.itemId!==found.id);
           Object.assign(found,metadata,{id:found.id,quantity,updatedAt:now});
+          if(incoming.level==null && incoming.quantity>0 && (action.mode==='purchase' || found.level==='empty'))found.level='sufficient';
         }else{next.items.push({...item.parse(metadata),id:crypto.randomUUID(),updatedAt:now});}
       }
       next.importFingerprints=[...confirmed,...hashes];
@@ -80,8 +83,24 @@ export function applyAction(state:HouseholdState,action:HouseholdAction,fingerpr
     }
     case 'update_item': {const found=findItem(action.id);if(action.patch.unit!==undefined && action.patch.unit!==found.unit)next.consumption=(next.consumption??[]).filter(o=>o.itemId!==found.id);Object.assign(found,action.patch,{updatedAt:now});label=`Mise à jour : ${found.name}`;break;}
     case 'delete_item': {const index=next.items.findIndex(i=>i.id===action.id);if(index<0)throw new DomainError('Produit introuvable.',404);label=`Suppression : ${next.items[index].name}`;next.items.splice(index,1);break;}
+    case 'mark_level': {
+      const found=findItem(action.id);found.level=action.level;found.updatedAt=now;
+      if(action.level==='empty')found.quantity=0;
+      if(action.level!=='sufficient')mergeShopping(next.shopping,{name:found.name,quantity:1,unit:found.unit,checked:false,priceMillimes:null});
+      label=`${action.level==='empty'?'Terminé':action.level==='low'?'Bientôt fini':'Suffisant'} : ${found.name}`;break;
+    }
+    case 'suggest_shopping': {
+      const forecasts=calculateForecasts(next,now);
+      for(const stock of next.items){
+        const forecast=forecasts.find(f=>f.itemId===stock.id);
+        const deficit=forecast?Math.max(0,forecast.monthly*action.days/30.4375-stock.quantity):0;
+        const quantity=Math.max(stock.level==='low'||stock.level==='empty'?1:0,Math.ceil(deficit));
+        if(quantity>0)mergeShopping(next.shopping,{name:stock.name,quantity,unit:stock.unit,checked:false,priceMillimes:null});
+      }
+      label=`Courses proposées pour ${action.days} jours`;break;
+    }
     case 'consume_item': {const found=findItem(action.id);if(action.quantity>found.quantity)throw new DomainError('Quantité supérieure au stock confirmé.');found.quantity-=action.quantity;if(found.quantity===0)found.level='empty';found.updatedAt=now;next.consumption=[...(next.consumption??[]),{itemId:found.id,quantity:action.quantity,at:now}].slice(-1000);label=`Consommation : ${found.name}`;break;}
-    case 'add_shopping':next.shopping.push({...action.item,id:crypto.randomUUID()});label=`Liste : ${action.item.name}`;break;
+    case 'add_shopping':mergeShopping(next.shopping,action.item);label=`Liste : ${action.item.name}`;break;
     case 'update_shopping': {const found=next.shopping.find(i=>i.id===action.id);if(!found)throw new DomainError('Article introuvable.',404);Object.assign(found,action.patch);label=`Liste modifiée : ${found.name}`;break;}
     case 'delete_shopping': {const index=next.shopping.findIndex(i=>i.id===action.id);if(index<0)throw new DomainError('Article introuvable.',404);next.shopping.splice(index,1);label='Article retiré de la liste';break;}
     case 'save_preferences':next.preferences=action.preferences;label='Préférences enregistrées';break;
@@ -95,10 +114,28 @@ export function applyAction(state:HouseholdState,action:HouseholdAction,fingerpr
     next.events.push({id:crypto.randomUUID(),action:action.action,label,createdAt:now,...(action.action==='clear_data'?{}:{before})});
     next.events=next.events.slice(-50);
   }
-  // Idempotency covers the last 100 successful mutations for this user. Clients
-  // must not replay older requests; an unbounded ledger needs a separate table.
+  // Compatibility cache only: the route's durable D1 mutation ledger protects
+  // requests beyond this window, including old purchase retries.
   next.requests.push({id:action.requestId,fingerprint});next.requests=next.requests.slice(-100);
   return next;
+}
+const normalizeShopping=(value:string)=>value.normalize('NFKC').trim().toLocaleLowerCase('fr').replace(/\s+/g,' ');
+/** Repeated needs are merged by maximum quantity; only confirmed purchases add stock. */
+function mergeShopping(list:ShoppingItem[],incoming:Omit<ShoppingItem,'id'>):void {
+  const name=normalizeShopping(incoming.name),unit=normalizeShopping(incoming.unit);
+  const matches=list.filter(entry=>normalizeShopping(entry.name)===name && normalizeShopping(entry.unit)===unit);
+  const retailer=normalizeShopping(incoming.retailer??'');
+  // A generic need also matches an existing store assignment. Never overwrite it.
+  const found=matches.find(entry=>!retailer || normalizeShopping(entry.retailer??'')===retailer)
+    ??matches.find(entry=>!entry.retailer);
+  if(found){
+    const quantity=Math.max(found.quantity,incoming.quantity);
+    // A checked article becomes outstanding again only when explicitly re-added.
+    if(found.checked){found.checked=false;found.priceMillimes=quantity===incoming.quantity?incoming.priceMillimes:null;}
+    else if(quantity!==found.quantity)found.priceMillimes=null;
+    found.quantity=quantity;
+    if(!found.retailer && incoming.retailer)found.retailer=incoming.retailer;
+  }else list.push({...incoming,id:crypto.randomUUID()});
 }
 export function monthlyForecast(item:HouseholdItem):{monthly:number;annual:number;toBuy:number}|null {
   if(item.monthlyUsage===null)return null;

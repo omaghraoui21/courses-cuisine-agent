@@ -6,7 +6,7 @@ L'application principale utilise Vinext/React sur Sites (Worker) avec stockage D
 Le projet `agent-runtime/` est un compagnon eve initialisé avec la CLI officielle. Ce runtime Node est séparé du Worker ; il n'est pas présenté comme déployé tant qu'il n'a pas son hébergement, ses secrets et ses tests. Les actions du site fonctionnent sans ce runtime.
 
 ## Stock et isolation
-Les données sont isolées par ID utilisateur ChatGPT dans D1. Le site est publié privé. Les mutations exigent une identité et une origine identique. Le stock confirmé et les projections restent distincts. Aucune initialisation par les photos d'exemple ni donnée personnelle en Git.
+Les données sont isolées par foyer dans D1 ; les membres autorisés utilisent leurs comptes ChatGPT distincts. Sans adhésion, le scope personnel historique est conservé. Le serveur résout le foyer et refuse une mutation dont le foyer attendu diffère. Les reçus permanents et changements de stock sont transactionnels. Le site est publié privé. Les mutations exigent une identité et une origine identique. Le stock confirmé et les projections restent distincts. Aucune initialisation par les photos d'exemple ni donnée personnelle en Git.
 
 ## Vision
 Le endpoint `/api/vision` est implémenté avec l'API Chat Completions de Vercel AI Gateway. Il exige AI_GATEWAY_API_KEY et AI_GATEWAY_MODEL dans les secrets du site. Sans configuration : erreur explicite 503 et saisie manuelle disponible. Les images passent en mémoire et ne sont pas conservées par l'application ; elles sont transmises au fournisseur choisi uniquement à la demande d'analyse. Les règles de conservation du fournisseur s'appliquent. Aucune promesse de reconnaissance avant essai réel.
