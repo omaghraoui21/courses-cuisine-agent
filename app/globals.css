@@ -13,3 +13,6 @@ button,a.primary,a.secondary,input[type=checkbox]{touch-action:manipulation}butt
 .shopping-suggestions{display:flex;align-items:center;gap:24px;margin-bottom:22px}.shopping-suggestions>div{flex:1}.shopping-suggestions h3{margin:0 0 8px}.shopping-suggestions p,.backup-card p{font-size:13px;line-height:1.6;color:#6c7565}.shopping-suggestions label{font-size:13px;min-width:175px}.backup-card{margin:22px 0}.shopping-suggestions select{min-height:48px;font-size:14px}@media(max-width:700px){.shopping-suggestions{display:block;padding:22px}.shopping-suggestions label{display:block;margin:16px 0}.shopping-suggestions button{width:100%}}
 
 @media(max-width:400px){.draft-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 38px;gap:8px}.draft-row>input:first-child{grid-column:1/-1}.draft-row>input{min-width:0;width:100%}.mobile-nav{grid-template-columns:repeat(4,minmax(0,1fr))}}
+
+/* Courses et livraison : garder les détails secondaires repliables. */
+.order-card select,.order-card input,.order-card textarea{width:100%;max-width:100%;box-sizing:border-box}.order-card textarea{min-height:180px}.order-card .extra-details{margin:18px 0}.order-summary{overflow-wrap:anywhere}.order-summary .quote-lines{max-height:230px;overflow:auto}.order-card .primary,.order-card .secondary{white-space:normal;min-height:48px}

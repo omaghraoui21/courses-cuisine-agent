@@ -11,7 +11,7 @@ Application familiale de courses et cuisine pour la Tunisie. Interface mobile fr
 - Prévisions déclarées, puis observations après au moins trois consommations sur quatorze jours ; projections mensuelles/annuelles provisoires.
 - Collecteur MG testé sur source réelle ; autres enseignes affichent leur état d'accès.
 - Analyse photo via Vercel AI Gateway une fois les secrets configurés ; quota de dix analyses par jour.
-- Brouillons et approbations de commande ; exécution désactivée tant qu'un vrai pont Glovo n'est pas connecté.
+- Brouillons et approbations de commande ; exécution désactivée tant qu'un vrai pont Glovo ou Yassir n'est pas connecté.
 
 Aucune photo ou donnée personnelle de la conversation n'est injectée dans l'application ou committée.
 
@@ -31,12 +31,15 @@ Le compagnon `agent-runtime/` est un projet eve séparé non déployé par le bu
 
 - Accès Site privé ; foyer partagé par invitation à usage unique. Le conjoint doit aussi recevoir l’accès au Site dans Partager.
 - Pas d'accès IA actif sans clé et modèle ; saisie manuelle toujours disponible.
-- Pas de pont Glovo opérationnel ni de paiement automatique actif.
+- Pas de pont Glovo ou Yassir opérationnel ni de paiement automatique actif.
 - Pas de collecte quotidienne planifiée ; actualisation au clic et cache temporaire.
 - Quatre enseignes ne fournissent pas encore de prix automatiquement exploitables.
 - Dix recettes et menus trois/sept jours ; seuls les filtres reconnus sont appliqués, les emballages restent à vérifier.
 
-Voir docs/retailer-feasibility.md et docs/glovo-bridge.md. Les états indisponibles restent explicites ; aucun succès simulé.
+Voir docs/retailer-feasibility.md et docs/delivery-bridge.md. Les états indisponibles restent explicites ; aucun succès simulé.
 
 ## Usage simple et état production
 Maison / Repas / Liste, niveaux sans comptage quotidien, liste semaine/mois, sauvegardes et restauration. Voir [production-readiness](docs/production-readiness.md) pour les fonctions vérifiées et les intégrations encore inactives.
+
+## Courses et livraison V3
+Conseiller de besoins, offres candidates sourcées et formats explicites, choix Glovo/Yassir, copie de liste et brouillons par fournisseur. Les prix des enseignes ne sont pas des devis de livraison. Voir [objectif V3](docs/goal-v3.md) et [reprise agent](AGENTS.md).

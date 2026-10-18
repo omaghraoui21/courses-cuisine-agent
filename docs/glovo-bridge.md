@@ -1,5 +1,7 @@
 # Contrat du pont Glovo externe
 
+Extension Glovo/Yassir et contrat courant : voir [delivery-bridge.md](delivery-bridge.md).
+
 Statut : contrat préparé ; aucun navigateur connecté, aucune commande réelle testée. Le pont n'est pas un service fourni par Glovo et son fonctionnement doit être validé avec un accès autorisé. Sans pont, le site enregistre une liste et n'exécute aucun achat.
 
 ## Déploiement nécessaire

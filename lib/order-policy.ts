@@ -25,5 +25,5 @@ export function validateQuote(raw: Record<string,unknown>, now=Date.now()) {
  const subtotal=lines.reduce((sum,x)=>sum+Math.round(x.quantity*x.priceMillimes!),0);
  if(subtotal!==raw.subtotalMillimes||subtotal+Number(raw.deliveryMillimes)+Number(raw.serviceMillimes)+Number(raw.otherFeesMillimes)-Number(raw.discountMillimes)!==raw.totalMillimes)throw new Error('Le total du devis est incohérent.');
  if(!Number.isSafeInteger(raw.expiresAt)||Number(raw.expiresAt)<=now||Number(raw.expiresAt)>now+600000)throw new Error('Devis expiré ou validité incorrecte.');
- return {...raw,items:lines.map((x,i)=>({...x,productId:rawItems[i].productId})),verified:true,totalMillimes:Number(raw.totalMillimes),quoteId:String(raw.quoteId),summary:String(raw.summary),expiresAt:Number(raw.expiresAt)};
+ return {items:lines.map((x,i)=>({...x,productId:String(rawItems[i].productId)})),verified:true,quoteId:String(raw.quoteId),storeName:String(raw.storeName),deliveryAddress:String(raw.deliveryAddress),summary:String(raw.summary),subtotalMillimes:Number(raw.subtotalMillimes),deliveryMillimes:Number(raw.deliveryMillimes),serviceMillimes:Number(raw.serviceMillimes),otherFeesMillimes:Number(raw.otherFeesMillimes),discountMillimes:Number(raw.discountMillimes),totalMillimes:Number(raw.totalMillimes),expiresAt:Number(raw.expiresAt)};
 }

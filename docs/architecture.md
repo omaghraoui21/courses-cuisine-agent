@@ -14,6 +14,8 @@ Le endpoint `/api/vision` est implémenté avec l'API Chat Completions de Vercel
 ## Collecte
 Chaque source a un état distinct. Une page accessible sans prix n'est pas un scraper de prix complet. La collecte au clic est implémentée ; aucune collecte quotidienne n'est activée tant qu'un ordonnanceur n'est configuré et vérifié.
 
-## Glovo
-Un pont navigateur externe est nécessaire pour une session utilisateur persistante. Il n'est pas fourni par le Worker et n'est pas connecté par défaut. Le site implémente brouillon, devis vérifié, approbation expirante et soumission unique. L'exécution reste indisponible sans GLOVO_BRIDGE_URL et GLOVO_BRIDGE_TOKEN, et sans pont correctement implémenté.
+## Livraison
+Un pont navigateur externe est nécessaire pour une session utilisateur persistante. Il n'est pas fourni par le Worker et n'est pas connecté par défaut. Le site implémente brouillon, devis vérifié, approbation expirante et soumission unique. L'exécution reste indisponible sans les secrets du pont Glovo ou Yassir, et sans pont correctement implémenté.
 Le pont doit revalider le devis exact avant tout achat et imposer l'idempotence de bout en bout. Toute modification de frais, articles, format ou adresse exige un nouveau devis et une nouvelle approbation. En cas d'erreur après soumission, le statut devient inconnu et aucune relance aveugle n'est autorisée.
+
+Les contrats de livraison courants sont dans [delivery-bridge.md](delivery-bridge.md). Le fournisseur et le foyer sont enregistrés avec chaque brouillon ; aucune IA ni navigation authentifiée n’est activée par ce lot.

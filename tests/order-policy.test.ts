@@ -16,6 +16,8 @@ test('invalid quantities and prices are rejected',()=>{
 test('a paid quote requires coherent fees, product IDs, address and expiry',()=>{
  const quote={verified:true,quoteId:'q1',storeName:'Magasin test',deliveryAddress:'Adresse privée test',summary:'Devis test',items:[{productId:'p1',name:'Lait',quantity:2,unit:'L',priceMillimes:1500}],subtotalMillimes:3000,deliveryMillimes:1000,serviceMillimes:200,otherFeesMillimes:0,discountMillimes:0,totalMillimes:4200,expiresAt:2000};
  assert.equal(validateQuote(quote,1000).totalMillimes,4200);
+ const sanitized=validateQuote({...quote,id:'poison',status:'confirmed',userId:'other',createdAt:0,provider:'yassir',scopeId:'other',budgetMillimes:999999},1000);
+ for(const key of ['id','status','userId','createdAt','provider','scopeId','budgetMillimes']) assert.equal(key in sanitized,false);
  assert.throws(()=>validateQuote({...quote,totalMillimes:3000},1000));
  assert.throws(()=>validateQuote({...quote,deliveryAddress:''},1000));
  assert.throws(()=>validateQuote({...quote,items:[{name:'Lait',quantity:1,priceMillimes:null}]},1000));
