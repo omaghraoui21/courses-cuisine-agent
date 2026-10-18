@@ -8,7 +8,7 @@ Application personnelle de courses et cuisine pour la Tunisie. Interface mobile 
 - Séparation inventaire/achats, import à confirmer et protection par empreinte contre les doublons.
 - Liste de courses persistante, prix connus/inconnus distincts et export JSON.
 - Recettes modèles simples ; disponibilité indicative, ingrédients manquants visibles.
-- Prévisions déclaratives mensuelles/annuelles ; pas d'apprentissage automatique annoncé.
+- Prévisions déclarées, puis observations après au moins trois consommations sur quatorze jours ; projections mensuelles/annuelles provisoires.
 - Collecteur MG testé sur source réelle ; autres enseignes affichent leur état d'accès.
 - Analyse photo via Vercel AI Gateway une fois les secrets configurés ; quota de dix analyses par jour.
 - Brouillons et approbations de commande ; exécution désactivée tant qu'un vrai pont Glovo n'est pas connecté.
