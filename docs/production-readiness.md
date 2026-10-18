@@ -41,3 +41,6 @@ Les tests automatisés ne remplacent pas un essai sur vos deux téléphones. La 
 
 ## Qualification actuelle
 Pilote familial renforcé, adapté à un essai accompagné. Ne pas annoncer « production ready » pour le périmètre complet tant que les parcours sur deux téléphones, la vision et la commande réelle n'ont pas été validés.
+
+## Adaptation des écrans
+Grilles fluides, navigation basse jusqu’à 800 px avec zones sûres, champs mobiles de 16 px, boutons et textes longs repliables, formulaires en une colonne sur écran étroit, fenêtres limitées à la hauteur dynamique. Revue indépendante du code et compilation ; rendu sur téléphone réel et clavier virtuel à confirmer. Le zoom reste autorisé.
